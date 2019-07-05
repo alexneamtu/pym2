@@ -1,5 +1,5 @@
 # pym 2 
-([pym improved](https://github.com/alexneamtu/pym))
+(improved [pym](https://github.com/alexneamtu/pym))
 
 A microservice that serves images and resizes them according to the request. The name is from the movie Ant-Man. Pym (Dr. Hank Pym) is the name of the doctor that shrunk Scott Lang.
 
