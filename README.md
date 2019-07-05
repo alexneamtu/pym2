@@ -6,7 +6,7 @@ A microservice that serves images and resizes them according to the request. The
 ## Running the code
 Run `npm i` to install the node dependencies.
 
-To start the project use `npm start`
+To start the project use `npm start` or `node node_modules/ts-node/dist/bin.js --ignore false app.ts`
 
 To stop the project use `npm stop`
 
