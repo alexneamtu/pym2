@@ -11,6 +11,25 @@ import { ISizeInput } from '../services/image-resize.service';
 import { StorageService } from '../services/storage.service';
 
 export class ImageRouter extends Router {
+  private static processInputFile(file: string): string {
+    const mimeType = mimeTypeLookup(file);
+    if (!_.includes(_.values(AllowedFileTypes), mimeType)) {
+      throw new Error(`Invalid file type. Allowed types: ${ _.join(_.keys(AllowedFileTypes)) }.`);
+    }
+    return mimeType as string;
+  }
+
+  private static processInputSize(size: string): ISizeInput {
+    const sizeRegex = /(?<width>\d+)x(?<height>\d+)/u;
+    const sizeRegexResult = sizeRegex.exec(size);
+
+    if (!sizeRegexResult) return null;
+
+    const width = _.parseInt(sizeRegexResult.groups.width);
+    const height = _.parseInt(sizeRegexResult.groups.height);
+    return { width, height };
+  }
+
   constructor() {
     super();
 
@@ -30,24 +49,4 @@ export class ImageRouter extends Router {
       ctx.body = fileContent;
     });
   }
-
-  private static processInputFile(file: string): string {
-    const mimeType = mimeTypeLookup(file);
-    if (!_.includes(_.values(AllowedFileTypes), mimeType)) {
-      throw new Error(`Invalid file type. Allowed types: ${ _.join(_.keys(AllowedFileTypes)) }.`)
-    }
-    return mimeType as string;
-  }
-
-  private static processInputSize(size: string): ISizeInput {
-    const sizeRegex = /(?<width>\d+)x(?<height>\d+)/u;
-    const sizeRegexResult = sizeRegex.exec(size);
-
-    if (!sizeRegexResult) return null;
-
-    const width = _.parseInt(sizeRegexResult.groups.width);
-    const height = _.parseInt(sizeRegexResult.groups.height);
-    return { width, height };
-  }
-
 }

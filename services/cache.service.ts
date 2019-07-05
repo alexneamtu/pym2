@@ -39,4 +39,3 @@ export class CacheService {
     return _.parseInt(this.client.get(missesKey));
   }
 }
-

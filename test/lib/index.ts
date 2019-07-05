@@ -1,5 +1,5 @@
 // npm
-import { agent, SuperTest, Test} from 'supertest';
+import { agent, SuperTest, Test } from 'supertest';
 
 // types
 import { IConfig } from '../../config';

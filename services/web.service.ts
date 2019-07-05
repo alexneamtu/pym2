@@ -1,17 +1,14 @@
 // npm
+import { Server } from 'http';
 import * as Koa from 'koa';
 import * as KoaRouter from 'koa-router';
-import { Server } from 'http';
 
 interface IWebServiceConfig {
   port: number;
 }
 
 export class WebService {
-  public readonly app: Koa;
-  public server: Server;
-
-  private static async errorHandler(ctx: Koa.Context, next: Function) {
+  private static async errorHandler(ctx: Koa.Context, next: () => void) {
     try {
       await next();
     } catch (error) {
@@ -21,6 +18,9 @@ export class WebService {
     }
   }
 
+  public readonly app: Koa;
+  public server: Server;
+
   constructor(private name: string, private config: IWebServiceConfig, router: KoaRouter) {
     const app = new Koa();
 
@@ -29,7 +29,7 @@ export class WebService {
     app.use(router.routes());
     app.use(router.allowedMethods());
 
-    app.on('error', function(err) {
+    app.on('error', (err) => {
       console.error(`Application error: ${err}`, err);
     });
 

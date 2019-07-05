@@ -9,17 +9,24 @@ import { config } from '../config';
 // enums
 import { AllowedFileTypes } from '../enums';
 
+// types
+import { lookup as mimeTypeLookup } from 'mime-types';
+
 // service
 import { CacheService } from './cache.service';
 import { ImageResizeService, ISizeInput } from './image-resize.service';
-import { lookup as mimeTypeLookup } from 'mime-types';
 
 export class StorageService {
   public static getInstance(): StorageService {
     return this.instance || (this.instance = new this());
   }
-
   private static instance: StorageService;
+
+  private static getCachedFileName(fileName: string, size: ISizeInput) {
+    const parsedFileName = path.parse(fileName);
+    return `${parsedFileName.name}.${size.width}x${size.height}${parsedFileName.ext}`;
+  }
+
   private sourcesPath: string;
   private cachePath: string;
 
@@ -36,7 +43,7 @@ export class StorageService {
       this.sourcesPath = path.resolve(sourcesPath);
       this.cachePath = path.resolve(cachePath);
     } catch (error) {
-      throw new Error(`Storage service config error: ${error.message}` );
+      throw new Error(`Storage service config error: ${error.message}`);
     }
   }
 
@@ -58,11 +65,6 @@ export class StorageService {
       if (error.code !== 'ENOENT') throw new Error(error.message);
       return false;
     }
-  }
-
-  private static getCachedFileName(fileName: string, size: ISizeInput) {
-    const parsedFileName = path.parse(fileName);
-    return `${parsedFileName.name}.${size.width}x${size.height}${parsedFileName.ext}`;
   }
 
   public async getReSizedFileContent(fileName: string, size: ISizeInput) {
@@ -92,8 +94,8 @@ export class StorageService {
     return this.getFolderCount(this.cachePath);
   }
 
-  private getFolderCount(path: string): number {
-    const images = _.filter(fs.readdirSync(path), (file) => {
+  private getFolderCount(folderPath: string): number {
+    const images = _.filter(fs.readdirSync(folderPath), (file) => {
       const mimeType = mimeTypeLookup(file);
       return _.includes(_.values(AllowedFileTypes), mimeType);
     });
