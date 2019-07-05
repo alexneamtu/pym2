@@ -32,10 +32,12 @@ export class CacheService {
   }
 
   public async getHits(): Promise<number> {
-    return _.parseInt(await this.client.get(hitsKey));
+    const hits = _.parseInt(await this.client.get(hitsKey));
+    return hits || 0;
   }
 
   public async getMisses(): Promise<number> {
-    return _.parseInt(await this.client.get(missesKey));
+    const misses = _.parseInt(await this.client.get(missesKey));
+    return misses || 0;
   }
 }

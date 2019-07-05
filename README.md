@@ -14,6 +14,11 @@ To run the tests use `npm test`
 
 To run the linter use `npm run lint`
 
+To access the image endpoint use http://localhost:7000/image/test.png?size=100x100
+
+To access the stats endpoint use http://localhost:8000/stats
+
+
 ## Docker
 In order to run the service inside a container run the following commands:
 
