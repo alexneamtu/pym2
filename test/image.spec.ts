@@ -20,20 +20,20 @@ describe('image', () => {
     const fileName = 'test.jpg';
     const image = await lib.image.get(fileName);
     expect(image).toBeTruthy();
-    expect(image.toString()).toEqual(fs.readFileSync(path.join(config.storage.path, fileName)).toString());
+    expect(image.toString()).toEqual(fs.readFileSync(path.join(config.storage.sourcesPath, fileName)).toString());
   });
 
   it('should return original gif', async() => {
     const fileName = 'test.gif';
     const image = await lib.image.get(fileName);
     expect(image).toBeTruthy();
-    expect(image.toString()).toEqual(fs.readFileSync(path.join(config.storage.path, fileName)).toString());
+    expect(image.toString()).toEqual(fs.readFileSync(path.join(config.storage.sourcesPath, fileName)).toString());
   });
 
   it('should return original png', async() => {
     const fileName = 'test.png';
     const image = await lib.image.get(fileName);
     expect(image).toBeTruthy();
-    expect(image.toString()).toEqual(fs.readFileSync(path.join(config.storage.path, fileName)).toString());
+    expect(image.toString()).toEqual(fs.readFileSync(path.join(config.storage.sourcesPath, fileName)).toString());
   });
 });

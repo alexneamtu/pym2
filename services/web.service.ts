@@ -17,10 +17,10 @@ export class WebService {
   private static async errorHandler(ctx: Context, next: Function) {
     try {
       await next();
-    } catch (err) {
-      ctx.status = err.status || 500;
-      ctx.body = err.message;
-      ctx.app.emit('error', err, ctx);
+    } catch (error) {
+      ctx.status = error.status || 500;
+      ctx.body = error.message;
+      ctx.app.emit('error', error, ctx);
     }
   }
 

@@ -1,5 +1,4 @@
 // npm
-import { Context } from 'koa';
 import * as Router from 'koa-router';
 import * as _ from 'lodash';
 import { lookup as mimeTypeLookup } from 'mime-types';
@@ -8,6 +7,7 @@ import { lookup as mimeTypeLookup } from 'mime-types';
 import { AllowedFileTypes } from '../enums';
 
 // services
+import { ISizeInput } from '../services/image-resize.service';
 import { StorageService } from '../services/storage.service';
 
 export class ImageRouter extends Router {
@@ -15,25 +15,36 @@ export class ImageRouter extends Router {
     super();
 
     this.get('/image/:file', async (ctx) => {
-      ImageRouter.validateInput(ctx);
+      const fileInput = _.get(ctx, 'params.file');
+      const sizeInput = _.get(ctx, 'request.query.size');
 
-      const file = ctx.params.file;
-      const fileMimeType = mimeTypeLookup(file) || 'text/plain';
+      const fileMimeType = ImageRouter.processInputFile(fileInput);
+      const size = ImageRouter.processInputSize(sizeInput);
 
       const storageService = StorageService.getInstance();
+
+      const fileContent = size ?
+        await storageService.getReSizedFileContent(fileInput, size) :
+        storageService.getSourceFileContent(fileInput);
       ctx.set('Content-Type', fileMimeType);
-      ctx.body = storageService.getFileContent(file);
+      ctx.body = fileContent;
     });
   }
 
-  private static validateInputFile(file: string): void {
+  private static processInputFile(file: string): string {
     const mimeType = mimeTypeLookup(file);
     if (!_.includes(_.values(AllowedFileTypes), mimeType)) {
       throw new Error(`Invalid file type. Allowed types: ${ _.join(_.keys(AllowedFileTypes)) }.`)
     }
+    return mimeType as string;
   }
 
-  private static validateInput(ctx: Context): void {
-    ImageRouter.validateInputFile(ctx.params.file);
+  private static processInputSize(size: string): ISizeInput {
+    const sizeRegex = /(?<width>\d+)x(?<height>\d+)/u;
+    const sizeRegexResult = sizeRegex.exec(size);
+    const width = _.parseInt(sizeRegexResult.groups.width);
+    const height = _.parseInt(sizeRegexResult.groups.height);
+    return { width, height };
   }
+
 }

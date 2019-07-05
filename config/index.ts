@@ -9,7 +9,8 @@ export interface IConfig {
     },
   },
   storage: {
-    path: string,
+    sourcesPath: string,
+    cachePath: string,
   },
 }
 
@@ -23,7 +24,8 @@ export const config = {
     },
   },
   storage: {
-    path: './storage',
+    sourcesPath: './storage',
+    cachePath: './storage/cache',
   },
 };
 
