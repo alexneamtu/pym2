@@ -7,14 +7,22 @@ import { lookup as mimeTypeLookup } from 'mime-types';
 // enums
 import { AllowedFileTypes } from '../enums';
 
-export class ImageResizeRouter extends Router {
+// services
+import { StorageService } from '../services/storage.service';
+
+export class ImageRouter extends Router {
   constructor() {
     super();
 
     this.get('/image/:file', async (ctx) => {
-      ImageResizeRouter.validateInput(ctx.params);
+      ImageRouter.validateInput(ctx);
 
-      ctx.body = 'test';
+      const file = ctx.params.file;
+      const fileMimeType = mimeTypeLookup(file) || 'text/plain';
+
+      const storageService = StorageService.getInstance();
+      ctx.set('Content-Type', fileMimeType);
+      ctx.body = storageService.getFileContent(file);
     });
   }
 
@@ -26,6 +34,6 @@ export class ImageResizeRouter extends Router {
   }
 
   private static validateInput(ctx: Context): void {
-    ImageResizeRouter.validateInputFile(ctx.file);
+    ImageRouter.validateInputFile(ctx.params.file);
   }
 }

@@ -2,12 +2,15 @@
 import * as _ from 'lodash';
 
 export interface IConfig {
-  env: string;
+  env: string,
   web: {
-    imageResize: {
-      port: number
-    }
-  }
+    image: {
+      port: number,
+    },
+  },
+  storage: {
+    path: string,
+  },
 }
 
 const env = process.env.NODE_ENV || 'default';
@@ -15,9 +18,12 @@ const env = process.env.NODE_ENV || 'default';
 export const config = {
   env,
   web: {
-    imageResize: {
+    image: {
       port: 7000,
     },
+  },
+  storage: {
+    path: './storage',
   },
 };
 

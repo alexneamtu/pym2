@@ -3,7 +3,7 @@ import * as Koa from 'koa';
 import { Server } from "http";
 
 // routers
-import { ImageResizeRouter } from '../routers/image-resize.router';
+import { ImageRouter } from '../routers/image.router';
 import { Context } from 'koa';
 
 interface IWebServiceConfig {
@@ -29,7 +29,7 @@ export class WebService {
 
     app.use(WebService.errorHandler);
 
-    const router = new ImageResizeRouter();
+    const router = new ImageRouter();
 
     app.use(router.routes());
     app.use(router.allowedMethods());
