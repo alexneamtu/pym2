@@ -1,10 +1,7 @@
 // npm
 import * as Koa from 'koa';
-import { Server } from "http";
-
-// routers
-import { ImageRouter } from '../routers/image.router';
-import { Context } from 'koa';
+import * as KoaRouter from 'koa-router';
+import { Server } from 'http';
 
 interface IWebServiceConfig {
   port: number;
@@ -14,7 +11,7 @@ export class WebService {
   public readonly app: Koa;
   public server: Server;
 
-  private static async errorHandler(ctx: Context, next: Function) {
+  private static async errorHandler(ctx: Koa.Context, next: Function) {
     try {
       await next();
     } catch (error) {
@@ -24,12 +21,10 @@ export class WebService {
     }
   }
 
-  constructor(private config: IWebServiceConfig) {
+  constructor(private name: string, private config: IWebServiceConfig, router: KoaRouter) {
     const app = new Koa();
 
     app.use(WebService.errorHandler);
-
-    const router = new ImageRouter();
 
     app.use(router.routes());
     app.use(router.allowedMethods());
@@ -43,7 +38,7 @@ export class WebService {
 
   public async listen() {
     this.server = this.app.listen(this.config.port, () => {
-      console.info(`Listening on port ${this.config.port}...`);
+      console.info(`${this.name} server listening on port ${this.config.port}...`);
     });
   }
 }

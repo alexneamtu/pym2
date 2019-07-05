@@ -7,11 +7,17 @@ export interface IConfig {
     image: {
       port: number,
     },
+    stats: {
+      port: number,
+    }
   },
   storage: {
     sourcesPath: string,
     cachePath: string,
   },
+  redis: {
+    host: string,
+  }
 }
 
 const env = process.env.NODE_ENV || 'default';
@@ -20,13 +26,20 @@ export const config = {
   env,
   web: {
     image: {
-      port: 7000,
+      port: parseInt(process.env.APP_IMAGE_PORT, 10) || 7000,
     },
+    stats: {
+      port: parseInt(process.env.APP_IMAGE_PORT, 10) || 8000,
+    }
   },
   storage: {
-    sourcesPath: './storage',
-    cachePath: './storage/cache',
+    sourcesPath: process.env.STORAGE_SOURCES_PATH || './storage',
+    cachePath: process.env.STORAGE_CACHE_PATH || './storage/cache',
   },
+  redis: {
+    host: process.env.REDIS_HOST || 'localhost',
+    port: parseInt(process.env.REDIS_PORT, 10) || 6379,
+  }
 };
 
 if (process.env.NODE_ENV && process.env.NODE_ENV !== 'default') {

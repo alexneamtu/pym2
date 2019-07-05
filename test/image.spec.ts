@@ -1,6 +1,7 @@
 // npm
 import * as fs from 'fs';
 import * as path from 'path';
+import * as sharp from 'sharp';
 
 // config
 import { config } from '../config';
@@ -17,23 +18,53 @@ describe('image', () => {
   });
 
   it('should return original jpg', async() => {
-    const fileName = 'test.jpg';
-    const image = await lib.image.get(fileName);
+    const queryString = 'test.jpg';
+    const image = await lib.image.get(queryString);
     expect(image).toBeTruthy();
-    expect(image.toString()).toEqual(fs.readFileSync(path.join(config.storage.sourcesPath, fileName)).toString());
+    expect(image.toString()).toEqual(fs.readFileSync(path.join(config.storage.sourcesPath, queryString)).toString());
   });
 
   it('should return original gif', async() => {
-    const fileName = 'test.gif';
-    const image = await lib.image.get(fileName);
+    const queryString = 'test.gif';
+    const image = await lib.image.get(queryString);
     expect(image).toBeTruthy();
-    expect(image.toString()).toEqual(fs.readFileSync(path.join(config.storage.sourcesPath, fileName)).toString());
+    expect(image.toString()).toEqual(fs.readFileSync(path.join(config.storage.sourcesPath, queryString)).toString());
   });
 
   it('should return original png', async() => {
-    const fileName = 'test.png';
-    const image = await lib.image.get(fileName);
+    const queryString = 'test.png';
+    const image = await lib.image.get(queryString);
     expect(image).toBeTruthy();
-    expect(image.toString()).toEqual(fs.readFileSync(path.join(config.storage.sourcesPath, fileName)).toString());
+    expect(image.toString()).toEqual(fs.readFileSync(path.join(config.storage.sourcesPath, queryString)).toString());
+  });
+
+  it('should return resized jpg', async() => {
+    const image = await lib.image.get('test.jpg?size=200x200');
+    expect(image).toBeTruthy();
+    const cachedImagePath = path.join(config.storage.cachePath, 'test.200x200.jpg');
+    expect(fs.existsSync(cachedImagePath)).toBeTruthy();
+    const imageMetadata = await sharp(image).metadata();
+    expect(imageMetadata.width).toEqual(200);
+    expect(imageMetadata.height).toEqual(200);
+  });
+
+  it('should return resized gif', async() => {
+    const image = await lib.image.get('test.gif?size=200x200');
+    expect(image).toBeTruthy();
+    const cachedImagePath = path.join(config.storage.cachePath, 'test.200x200.gif');
+    expect(fs.existsSync(cachedImagePath)).toBeTruthy();
+    const imageMetadata = await sharp(image).metadata();
+    expect(imageMetadata.width).toEqual(200);
+    expect(imageMetadata.height).toEqual(200);
+  });
+
+  it('should return resized png', async() => {
+    const image = await lib.image.get('test.png?size=200x200');
+    expect(image).toBeTruthy();
+    const cachedImagePath = path.join(config.storage.cachePath, 'test.200x200.png');
+    expect(fs.existsSync(cachedImagePath)).toBeTruthy();
+    const imageMetadata = await sharp(image).metadata();
+    expect(imageMetadata.width).toEqual(200);
+    expect(imageMetadata.height).toEqual(200);
   });
 });

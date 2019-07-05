@@ -25,7 +25,7 @@ export class ImageRouter extends Router {
 
       const fileContent = size ?
         await storageService.getReSizedFileContent(fileInput, size) :
-        storageService.getSourceFileContent(fileInput);
+        await storageService.getSourceFileContent(fileInput);
       ctx.set('Content-Type', fileMimeType);
       ctx.body = fileContent;
     });
@@ -42,6 +42,9 @@ export class ImageRouter extends Router {
   private static processInputSize(size: string): ISizeInput {
     const sizeRegex = /(?<width>\d+)x(?<height>\d+)/u;
     const sizeRegexResult = sizeRegex.exec(size);
+
+    if (!sizeRegexResult) return null;
+
     const width = _.parseInt(sizeRegexResult.groups.width);
     const height = _.parseInt(sizeRegexResult.groups.height);
     return { width, height };

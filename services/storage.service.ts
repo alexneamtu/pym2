@@ -1,12 +1,18 @@
 // npm
 import * as fs from 'fs';
+import * as _ from 'lodash';
 import * as path from 'path';
 
 // config
 import { config } from '../config';
 
+// enums
+import { AllowedFileTypes } from '../enums';
+
 // service
+import { CacheService } from './cache.service';
 import { ImageResizeService, ISizeInput } from './image-resize.service';
+import { lookup as mimeTypeLookup } from 'mime-types';
 
 export class StorageService {
   public static getInstance(): StorageService {
@@ -21,7 +27,7 @@ export class StorageService {
 
   public initialize() {
     const sourcesPath = config.storage.sourcesPath;
-    const cachePath = config.storage.sourcesPath;
+    const cachePath = config.storage.cachePath;
 
     if (!fs.existsSync(sourcesPath)) throw new Error('Missing sources path.');
     if (!fs.existsSync(cachePath)) throw new Error('Missing cache path.');
@@ -34,9 +40,13 @@ export class StorageService {
     }
   }
 
-  public getSourceFileContent(fileName: string) {
-    const resolvedPath = path.resolve(this.sourcesPath, fileName);
-    return fs.readFileSync(resolvedPath);
+  public async getSourceFileContent(fileName: string) {
+    try {
+      const resolvedPath = path.resolve(this.sourcesPath, fileName);
+      return fs.readFileSync(resolvedPath);
+    } catch (error) {
+      if (error.code !== 'ENOENT') throw new Error(error.message);
+    }
   }
 
   public getCacheFileContent(fileName: string, size: ISizeInput) {
@@ -57,7 +67,10 @@ export class StorageService {
 
   public async getReSizedFileContent(fileName: string, size: ISizeInput) {
     const reSizedFile = this.getCacheFileContent(fileName, size);
-    if (!reSizedFile) {
+    if (reSizedFile) {
+      await CacheService.getInstance().incrementHits();
+    } else {
+      await CacheService.getInstance().incrementMisses();
       try {
         await ImageResizeService.resize(
           path.resolve(this.sourcesPath, fileName),
@@ -69,5 +82,21 @@ export class StorageService {
       }
     }
     return this.getCacheFileContent(fileName, size);
+  }
+
+  public getSourcesFolderCount(): number {
+    return this.getFolderCount(this.sourcesPath);
+  }
+
+  public getCacheFolderCount(): number {
+    return this.getFolderCount(this.cachePath);
+  }
+
+  private getFolderCount(path: string): number {
+    const images = _.filter(fs.readdirSync(path), (file) => {
+      const mimeType = mimeTypeLookup(file);
+      return _.includes(_.values(AllowedFileTypes), mimeType);
+    });
+    return images.length;
   }
 }
