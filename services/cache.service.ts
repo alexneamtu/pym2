@@ -1,6 +1,7 @@
 // npm
 // @ts-ignore
 import * as Redis from 'async-redis';
+import * as _ from 'lodash';
 
 // config
 import { config } from '../config';
@@ -31,11 +32,11 @@ export class CacheService {
   }
 
   public async getHits(): Promise<number> {
-    return this.client.get(hitsKey);
+    return _.parseInt(this.client.get(hitsKey));
   }
 
   public async getMisses(): Promise<number> {
-    return this.client.get(missesKey);
+    return _.parseInt(this.client.get(missesKey));
   }
 }
 
