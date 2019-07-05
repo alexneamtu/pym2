@@ -62,3 +62,7 @@ typings/
 
 # Webstorm
 .idea
+
+# ignore local configs
+config/*.ts
+!config/index.ts
