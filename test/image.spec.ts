@@ -12,6 +12,10 @@ import { TestLib } from './lib';
 describe('image', () => {
   const lib = new TestLib(config);
 
+  beforeAll(async () => {
+    await lib.setup();
+  });
+
   it('should only allow file types specified in the allowed file types enum', async () => {
     const image = lib.image.get('test.doc');
     await expect(image).rejects.toThrow('Error executing query: Invalid file type. Allowed types: jpg,png,gif.');

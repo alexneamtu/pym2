@@ -40,4 +40,8 @@ export class CacheService {
     const misses = _.parseInt(await this.client.get(missesKey));
     return misses || 0;
   }
+
+  public async cleanup(): Promise<void> {
+    return this.client.flushall();
+  }
 }

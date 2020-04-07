@@ -10,6 +10,10 @@ import { CacheService } from '../services/cache.service';
 describe('stats', () => {
   const lib = new TestLib(config);
 
+  beforeAll(async () => {
+    await lib.setup();
+  });
+
   it('should increment misses', async() => {
     const cacheService = CacheService.getInstance();
 

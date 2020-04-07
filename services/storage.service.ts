@@ -94,11 +94,22 @@ export class StorageService {
     return this.getFolderCount(this.cachePath);
   }
 
+  public cleanup(): void {
+    this.removeAllFiles(this.cachePath);
+  }
+
   private getFolderCount(folderPath: string): number {
     const images = _.filter(fs.readdirSync(folderPath), (file) => {
       const mimeType = mimeTypeLookup(file);
       return _.includes(_.values(AllowedFileTypes), mimeType);
     });
     return images.length;
+  }
+
+  private removeAllFiles(folderPath: string) {
+    for (const image of fs.readdirSync(folderPath)) {
+      const mimeType = mimeTypeLookup(image);
+      if (_.includes(_.values(AllowedFileTypes), mimeType)) fs.unlinkSync(path.resolve(this.cachePath, image));
+    }
   }
 }
