@@ -14,14 +14,20 @@ export class ImageRouter extends Router {
   private static processInputFile(file: string): string {
     const mimeType = mimeTypeLookup(file);
     if (!_.includes(_.values(AllowedFileTypes), mimeType)) {
-      throw new Error(`Invalid file type. Allowed types: ${ _.join(_.keys(AllowedFileTypes)) }.`);
+      throw new Error(`Invalid file type. Allowed types: ${_.join(_.keys(AllowedFileTypes))}.`);
     }
     return mimeType as string;
   }
 
-  private static processInputSize(size: string): ISizeInput {
+  private static processInputSize(size: string | string[]): ISizeInput {
+    // If size is an array, use the first element
+    const sizeValue = Array.isArray(size) ? size[0] : size;
+
+    // If no valid size is provided, return null
+    if (!sizeValue) return null;
+
     const sizeRegex = /(?<width>\d+)x(?<height>\d+)/u;
-    const sizeRegexResult = sizeRegex.exec(size);
+    const sizeRegexResult = sizeRegex.exec(sizeValue);
 
     if (!sizeRegexResult) return null;
 
@@ -33,7 +39,7 @@ export class ImageRouter extends Router {
   constructor() {
     super();
 
-    this.get('/image/:file', async (ctx) => {
+    this.get('/image/:file', async(ctx) => {
       const fileInput = _.get(ctx, 'params.file');
       const sizeInput = _.get(ctx, 'request.query.size');
 

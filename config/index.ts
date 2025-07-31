@@ -5,6 +5,8 @@ export interface IConfig {
   env: string;
   redis: {
     host: string,
+    port?: number,
+    mock?: boolean,
   };
   storage: {
     cachePath: string,
@@ -27,6 +29,7 @@ export const config = {
   redis: {
     host: process.env.REDIS_HOST || 'localhost',
     port: parseInt(process.env.REDIS_PORT, 10) || 6379,
+    mock: false, // default to false, can be overridden
   },
   storage: {
     cachePath: process.env.STORAGE_CACHE_PATH || './storage/cache',

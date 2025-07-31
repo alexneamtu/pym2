@@ -1,11 +1,8 @@
 // npm
-import { agent, SuperTest, Test } from 'supertest';
+import { agent } from 'supertest';
 
 // types
 import { IConfig } from '../../config';
-
-// test lib
-import { ImageRequest } from './image-request';
 
 // routers
 import { ImageRouter } from '../../routers/image.router';
@@ -15,9 +12,12 @@ import { CacheService } from '../../services/cache.service';
 import { StorageService } from '../../services/storage.service';
 import { WebService } from '../../services/web.service';
 
+// test lib
+import { ImageRequest } from './image-request';
+
 export class TestLib {
   public config: IConfig;
-  public apiRequester: SuperTest<Test>;
+  public apiRequester: ReturnType<typeof agent>;
   public image: ImageRequest;
   public storageService: StorageService;
   public cacheService: CacheService;
